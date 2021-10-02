@@ -10,12 +10,12 @@ entrypoint!(process_instruction);
 
 // Program entrypoint's implementation
 pub fn process_instruction(
-    _program_id: &Pubkey, // Public key of the account the hello world program was loaded into
-    _accounts: &[AccountInfo], // The account to say hello to
-    _instruction_data: &[u8], // Ignored, all helloworld instructions are hellos
+    _program_id: &Pubkey, 
+    _accounts: &[AccountInfo],
+    _instruction_data: &[u8],
 ) -> ProgramResult {
     msg!("Voting Rust program entrypoint");
-
+    
     Ok(())
 }
 
