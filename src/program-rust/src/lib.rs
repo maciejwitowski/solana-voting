@@ -1,25 +1,7 @@
-use solana_program::{
-    account_info::{AccountInfo},
-    entrypoint,
-    entrypoint::ProgramResult,
-    msg,
-    pubkey::Pubkey,
-};
-// Declare and export the program's entrypoint
-entrypoint!(process_instruction);
+pub mod error;
+pub mod instruction;
+pub mod processor;
+pub mod state;
 
-// Program entrypoint's implementation
-pub fn process_instruction(
-    _program_id: &Pubkey, 
-    _accounts: &[AccountInfo],
-    _instruction_data: &[u8],
-) -> ProgramResult {
-    msg!("Voting Rust program entrypoint");
-    
-    Ok(())
-}
-
-// Sanity tests
-#[cfg(test)]
-mod test {
-}
+#[cfg(not(feature = "no-entrypoint"))]
+pub mod entrypoint;
