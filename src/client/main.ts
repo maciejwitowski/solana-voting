@@ -15,7 +15,7 @@ async function main() {
   // Establish connection to the cluster
   await establishConnection();
 
-  // Establish voting chariperson
+  // Establish voting chariperson (the same as program owner)
   await establishChairperson();
 
   // Verify if the voting program has been deployeds

@@ -1,5 +1,3 @@
-use solana_program::program_error::ProgramError;
-
 pub enum VotingInstruction {
     AddProposals {
         amount: u64
