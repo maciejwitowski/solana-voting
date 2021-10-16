@@ -42,32 +42,33 @@ const PROGRAM_SO_PATH = path.join(PROGRAM_PATH, 'voting.so');
  */
 const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'voting-keypair.json');
 
-/**
- * The state of a greeting account managed by the hello world program
- */
- class GreetingAccount {
-    counter = 0;
-    constructor(fields: { counter: number } | undefined = undefined) {
-      if (fields) {
-        this.counter = fields.counter;
-      }
+class VotingData {
+    names: Array<string> = [];
+    counts: Array<number> = [];
+
+    constructor(names: Array<string>, counts: Array<number>) {
+        this.names = names;
+        this.counts = counts;
     }
-  }
-  
-  /**
-   * Borsh schema definition for greeting accounts
-   */
-  const GreetingSchema = new Map([
-    [GreetingAccount, { kind: 'struct', fields: [['counter', 'u32']] }],
-  ]);
-  
-  /**
-   * The expected size of each greeting account.
-   */
-  const GREETING_SIZE = borsh.serialize(
-    GreetingSchema,
-    new GreetingAccount(),
-  ).length;
+}
+
+const VotingSchema = new Map([
+    [VotingData, {
+        kind: 'struct',
+        fields: [
+            ['names', 'string'],
+            ['counts', 'u32']
+        ]
+    }],
+]);
+
+const VOTING_SIZE = borsh.serialize(
+    VotingSchema,
+    new VotingData(
+        ["Ethereum", "Solana", "Cardano"],
+        [0, 0, 0]
+    )
+).length;
 
 export async function establishConnection(): Promise<void> {
     const rpcUrl = await getRpcUrl();
@@ -125,7 +126,7 @@ export async function checkProgram(): Promise<void> {
         throw new Error(`Program is not executable`);
     }
     console.log("Using program: ", programId.toBase58());
-    
+
     const VOTING_SEED = 'voting';
     votingAccountPubKey = await PublicKey.createWithSeed(
         chairperson.publicKey,
@@ -134,32 +135,35 @@ export async function checkProgram(): Promise<void> {
     );
 
     const votingAccount = await connection.getAccountInfo(votingAccountPubKey);
+    console.log("Voting account: ", votingAccountPubKey.toBase58());
     if (votingAccount == null) {
         console.log(
-            'Creating voting account', 
+            'Creating voting account',
             votingAccountPubKey.toBase58()
         );
 
         const lamports = await connection.getMinimumBalanceForRentExemption(
-            GREETING_SIZE,
+            VOTING_SIZE,
         );
 
         const transaction = new Transaction().add(
             SystemProgram.createAccountWithSeed({
-              fromPubkey: chairperson.publicKey,
-              basePubkey: chairperson.publicKey,
-              seed: VOTING_SEED,
-              newAccountPubkey: votingAccountPubKey,
-              lamports,
-              space: GREETING_SIZE,
-              programId,
+                fromPubkey: chairperson.publicKey,
+                basePubkey: chairperson.publicKey,
+                seed: VOTING_SEED,
+                newAccountPubkey: votingAccountPubKey,
+                lamports,
+                space: VOTING_SIZE,
+                programId,
             }),
-          );
-          await sendAndConfirmTransaction(connection, transaction, [chairperson]);
+        );
+        await sendAndConfirmTransaction(connection, transaction, [chairperson]);
     }
 }
 
 export async function setProposals(): Promise<void> {
+    console.log('Voting size:', VOTING_SIZE);
+
     const instruction = new TransactionInstruction({
         keys: [{ pubkey: votingAccountPubKey, isSigner: false, isWritable: true }],
         programId,
