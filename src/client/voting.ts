@@ -42,6 +42,8 @@ const PROGRAM_SO_PATH = path.join(PROGRAM_PATH, 'voting.so');
  */
 const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'voting-keypair.json');
 
+// Modeled with 2 arrays since borsh doesn't support list of structs like Proposal(name, count)
+// https://github.com/near/borsh-js/issues/22
 class VotingData {
     names: Array<string> = [];
     counts: Array<number> = [];
@@ -164,10 +166,19 @@ export async function checkProgram(): Promise<void> {
 export async function setProposals(): Promise<void> {
     console.log('Voting size:', VOTING_SIZE);
 
+    const proposals = borsh.serialize(
+        VotingSchema,
+        new VotingData(
+            ["Ethereum", "Solana", "Cardano"],
+            [0, 0, 0]
+        )
+    )
+    
     const instruction = new TransactionInstruction({
         keys: [{ pubkey: votingAccountPubKey, isSigner: false, isWritable: true }],
         programId,
-        data: Buffer.alloc(0), // All instructions are hellos
+        data: Buffer.from('this is my transaction')
+        // data: Buffer.from(proposals)
     });
     await sendAndConfirmTransaction(
         connection,
