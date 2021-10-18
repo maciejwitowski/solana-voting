@@ -1,16 +1,13 @@
-use solana_program::{
-    instruction::{Instruction},
-    program_error::ProgramError
+use {
+    crate::error::VotingError::InvalidInstruction,
+    borsh::{BorshDeserialize, BorshSerialize}
 };
 
-use crate::error::VotingError::InvalidInstruction;
-use borsh::{BorshDeserialize, BorshSerialize};
-
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
+#[derive(Clone, Debug, BorshSerialize, BorshDeserialize, PartialEq)]
 pub enum VotingInstruction {
     Create {
         number: u32
-    }
+    },
     /// Accounts expected by this instruction:
     ///
     /// 0. `[writable]` Chairperson account, which creating initial voting state

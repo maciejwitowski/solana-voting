@@ -26,6 +26,23 @@ impl Processor {
         
         msg!("Instruction data size: {:?}", instruction_data.len());
 
+        let instruction = VotingInstruction::try_from_slice(instruction_data)
+            .map_err(|_| ProgramError::InvalidInstructionData)?;
+
+        match instruction {
+            VotingInstruction::Create {
+                number
+            } => {
+                msg!("Instruction: Create {:?}", number);
+            }
+            VotingInstruction::InitializeVoting {
+                proposals,
+                counts
+            } => {
+                msg!("Instruction: InitializeVoting");
+            }
+        }
+
         let account_iter = &mut accounts.iter();
         let account = next_account_info(account_iter)?;
 
