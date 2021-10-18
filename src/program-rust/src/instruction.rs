@@ -8,6 +8,9 @@ use borsh::{BorshDeserialize, BorshSerialize};
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub enum VotingInstruction {
+    Create {
+        number: u32
+    }
     /// Accounts expected by this instruction:
     ///
     /// 0. `[writable]` Chairperson account, which creating initial voting state
