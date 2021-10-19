@@ -12,7 +12,7 @@ import path from 'path';
 import { createKeypairFromFile, getDeployedProgramOwner, getRpcUrl } from './utils';
 import * as borsh from 'borsh';
 import { Numberu32 } from './utils';
-import { createInstruction } from './instructions';
+import { addProposalInstruction, createInstruction } from './instructions';
 
 let connection: Connection;
 
@@ -176,9 +176,10 @@ export async function setProposals(): Promise<void> {
         )
     )
 
-    const instruction = createInstruction(
+    const instruction = addProposalInstruction(
         programId,
-        votingAccountPubKey
+        votingAccountPubKey,
+        "My first proposal"
     );
 
     await sendAndConfirmTransaction(
