@@ -11,6 +11,8 @@ import fs from 'mz/fs';
 import path from 'path';
 import { createKeypairFromFile, getDeployedProgramOwner, getRpcUrl } from './utils';
 import * as borsh from 'borsh';
+import { Numberu32 } from './utils';
+import { createInstruction } from './instructions';
 
 let connection: Connection;
 
@@ -173,13 +175,12 @@ export async function setProposals(): Promise<void> {
             [0, 0, 0]
         )
     )
-    
-    const instruction = new TransactionInstruction({
-        keys: [{ pubkey: votingAccountPubKey, isSigner: false, isWritable: true }],
+
+    const instruction = createInstruction(
         programId,
-        data: Buffer.from('this is my transaction')
-        // data: Buffer.from(proposals)
-    });
+        votingAccountPubKey
+    );
+
     await sendAndConfirmTransaction(
         connection,
         new Transaction().add(instruction),
