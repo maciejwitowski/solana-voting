@@ -12,7 +12,7 @@ import path from 'path';
 import { createKeypairFromFile, getDeployedProgramOwner, getRpcUrl } from './utils';
 import * as borsh from 'borsh';
 import { Numberu32 } from './utils';
-import { addProposalInstruction, createInstruction } from './instructions';
+import { addProposalInstruction } from './instructions';
 
 let connection: Connection;
 

@@ -5,8 +5,8 @@ use {
 
 #[derive(Clone, Debug, BorshSerialize, BorshDeserialize, PartialEq)]
 pub enum VotingInstruction {
-    Create {
-        number: u32
+    AddProposal {
+        name: Vec<u8>
     },
     /// Accounts expected by this instruction:
     ///

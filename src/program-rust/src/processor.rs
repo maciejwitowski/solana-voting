@@ -30,10 +30,10 @@ impl Processor {
             .map_err(|_| ProgramError::InvalidInstructionData)?;
 
         match instruction {
-            VotingInstruction::Create {
-                number
+            VotingInstruction::AddProposal {
+                name
             } => {
-                msg!("Instruction: Create {:?}", number);
+                msg!("Instruction: AddProposal {:?}", name);
             }
             VotingInstruction::InitializeVoting {
                 proposals,
