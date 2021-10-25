@@ -1,6 +1,7 @@
 use { 
     crate::{
-        instruction::VotingInstruction
+        instruction::VotingInstruction,
+        state::write_data
     },
     solana_program::{
         msg,
@@ -34,6 +35,7 @@ impl Processor {
                 name
             } => {
                 msg!("Instruction: AddProposal {:?}", name);
+                Processor::processAddProposal(program_id, accounts, name)
             }
             VotingInstruction::InitializeVoting {
                 proposals,
@@ -43,11 +45,24 @@ impl Processor {
             }
         }
 
-        let account_iter = &mut accounts.iter();
-        let account = next_account_info(account_iter)?;
-
-        msg!("Account: {:?}", account);
-
         Ok(())
+    }
+
+    fn processAddProposal(
+        program_id: &Pubkey, 
+        accounts: &[AccountInfo],
+        name: Vec<u8>
+    ) {
+        msg!("processAddProposal {:?}", std::str::from_utf8(&name));
+        
+        let accounts_iter = &mut accounts.iter();
+        let voting_account = next_account_info(accounts_iter).ok().unwrap();
+
+        let dataLen = voting_account.data.borrow().len();
+
+        msg!("Voting account: {:?}, length: {:?}", voting_account.key, dataLen);
+
+        msg!("Content {:?}", std::str::from_utf8(&voting_account.data.borrow()));
+        write_data(voting_account, &name, 0);
     }
 }
